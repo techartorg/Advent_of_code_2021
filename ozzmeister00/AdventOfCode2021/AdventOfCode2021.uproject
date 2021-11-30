@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{6CB41266-4974-6682-9E68-E29208E85C49}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "AdventOfCode2021",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
