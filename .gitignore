@@ -1,5 +1,5 @@
 # Don't upload your AoC input files!
-input*.txt
+*input*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
