@@ -128,6 +128,14 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# inputs
+*.txt
+*.input
+
+# Workspaces
+
+*.code-workspace
+
 # ozzmeister00
 ozzmeister00/AdventOfCode2021/Binaries/
 ozzmeister00/AdventOfCode2021/Intermediate/
