@@ -12,6 +12,7 @@ def part_1(data: List[str]) -> None:
 
 
 def part_2(data: List[str]) -> None:
+    # Must be using Python 3.1x for this to work.
     aim = 0
     pos = 0
     depth = 0
