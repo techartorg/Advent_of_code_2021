@@ -2,17 +2,25 @@ from contextlib import suppress
 from pathlib import Path
 from typing import List
 
+# Must be using Python 3.1x for this to work.
 
 def part_1(data: List[str]) -> None:
-    total = sum([int(x.split(' ')[-1]) for x in data if x.startswith("forward")]) * \
-            ((0 - sum([int(x.split(' ')[-1]) for x in data if x.startswith("up")])) + \
-            sum([int(x.split(' ')[-1]) for x in data if x.startswith("down")]))
+    pos = 0
+    depth = 0
+    for d in data:
+        command, val = d.split(' ')
+        match command:
+            case "forward":
+                pos += int(val)
+            case "up":
+                depth -= int(val)
+            case "down":
+                depth += int(val)
     
-    print(total)
+    print(pos * depth)
 
 
 def part_2(data: List[str]) -> None:
-    # Must be using Python 3.1x for this to work.
     aim = 0
     pos = 0
     depth = 0
@@ -27,7 +35,7 @@ def part_2(data: List[str]) -> None:
             case "down":
                 aim += int(val)
 
-    print(pos*depth)
+    print(pos * depth)
 
 
 if __name__ == "__main__":
