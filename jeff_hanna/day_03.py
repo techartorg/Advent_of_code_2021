@@ -38,10 +38,7 @@ def _find_rating( data: List[str], target_val: str, start_bit: int) -> str:
         return matched_data[0]
     else:
         val = _find_rating(matched_data, target_val, start_bit + 1)
-        if val:
-            return val
-
-    return ""
+        return val or ""
 
 
 def part_2(data: List[str]) -> None:
