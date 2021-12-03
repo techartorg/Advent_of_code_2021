@@ -6,9 +6,11 @@ from typing import List
 def part_1(data: List[str]) -> None:
     gamma_rate = ""
     epsilon_rate = ""
+    c = Counter()
 
     for i in range(len(data[0])):
-        c = Counter([x[i] for x in data])
+        c.clear()
+        c.update([x[i] for x in data])
         gamma_rate += c.most_common()[0][0]
         epsilon_rate += c.most_common()[-1][0]
 
