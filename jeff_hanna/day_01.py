@@ -7,13 +7,14 @@ def calc_number_of_increases(data: List[int]) -> int:
     num_increases = 0
     for i, x in enumerate(data):
         with suppress(IndexError):
-            if data[ i + 1 ] > x:
+            if data[i + 1] > x:
                 num_increases += 1
 
     return num_increases
 
 
 def calc_number_of_triplet_increases(data: List[int]) -> int:
+    
     num_increases = 0
     #for i in range(0, len(data), 2):
     for i in range(len(data)):
@@ -34,7 +35,7 @@ def calc_number_of_triplet_increases(data: List[int]) -> int:
 
 
 if __name__ == "__main__":
-    filepath = Path(__file__).parent / "day_1_input.txt"
+    filepath = Path(__file__).parent / "day_01_input.txt"
     data = [int(x) for x in filepath.read_text().split("\n")]
     result = calc_number_of_increases(data)
     print(f"The number of increases in the data is: {result}.")
