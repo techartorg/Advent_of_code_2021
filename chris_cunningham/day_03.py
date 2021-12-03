@@ -10,7 +10,7 @@ def main():
 
 
 def part_one(inputs: list[int]) -> int:
-    half = len(inputs) / 2
+    half = len(inputs) // 2
     gamma = 0
 
     for pos in range(12):
@@ -33,7 +33,7 @@ def get_reading(inputs: list[int], predicate: Callable[[int, int], bool]) -> int
 
     for pos in reversed(range(12)):
         ones = sum((i & (1 << pos)) > 0 for i in data)
-        mask = 1 if predicate(ones, len(data) - ones) else 0
+        mask = 1 if predicate(ones, len(data) // 2) else 0
         data = [i for i in data if (i >> pos) & 1 == mask]
         if len(data) == 1:
             break
