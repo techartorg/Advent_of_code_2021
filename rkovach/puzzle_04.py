@@ -166,33 +166,21 @@ def score_board(board, number):
     Update the board and return it.
 
     """
+    winner = False
     for i, row in enumerate(board):
         for j, column in enumerate(row):
             if board[i][j] == number:
                 board[i][j] = -1
-    return board
 
-
-def is_board_a_winner(board):
-    """
-    Check the rows and columns for a winner.
-    If the sum of the row or columns is -5, then all squares
-    were marked.
-
-    """
-    for row in board:
-        if sum(row) == -5:
-            return True
-    columns = list(map(list, zip(*board)))
-    for c in columns:
-        if sum(c) == -5:
-            return True
-    return False
+                # check to see if the number completes a row or column.
+                if sum(row) == -5 or sum([row[j] for row in board]) == -5:
+                    winner = True
+    return board, winner
 
 
 def calculate_score(board, winningNumber):
     """
-    Score is the sum of the un-marked squares multiplied
+    Score is the sum of the unmarked squares multiplied
     by the winning number.
     
     """
@@ -226,8 +214,8 @@ def play_bingo(numbers, boards):
             # skip cards that already won.
             if i in winningIndices:
                 continue
-            b1 = score_board(b, number)
-            if is_board_a_winner(b1):
+            b1, winner = score_board(b, number)
+            if winner:
                 winningCards.append(b1)
                 winningNumbers.append(number)
                 winningIndices.append(i)
