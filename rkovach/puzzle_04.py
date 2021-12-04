@@ -222,9 +222,6 @@ def play_bingo(numbers, boards):
 
     scores = copy.deepcopy(boards)
     for number in numbers:
-        # Stop once all the cards have won.
-        if len(scores) < 1:
-            break
         for i, b in enumerate(scores):
             # skip cards that already won.
             if i in winningIndices:
