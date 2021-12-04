@@ -124,7 +124,7 @@ puzzle_input = open(__file__.replace('.py', '_input.txt')).read()
 
 def parse_input(input_):
     """
-    The first line are the bingo numbers the call. 
+    The first line are the bingo numbers to call. 
     The rest are the bingo cards separated by empty lines.
 
     """
@@ -162,47 +162,46 @@ def create_board(lines):
 
 def score_board(board, number):
     """
-    Check the board for the number and replace it with "Zero".
-
-    Note: This is flawed, but it worked with my test input and
-    puzzle input. Need to revisit this...
+    Check the board for the number and replace it with -1.
+    Update the board and return it.
 
     """
     for i, row in enumerate(board):
         for j, column in enumerate(row):
             if board[i][j] == number:
-                board[i][j] = 0
+                board[i][j] = -1
     return board
 
 
 def is_board_a_winner(board):
     """
     Check the rows and columns for a winner.
-    If the sum of the row or columns is zero, then all squares
+    If the sum of the row or columns is -5, then all squares
     were marked.
-
-    Note: This is flawed since "0" can be a number on the board.
-    It worked with the test input and puzzle input, but it needs
-    to be revisited.
 
     """
     for row in board:
-        if sum(row) == 0:
+        if sum(row) == -5:
             return True
     columns = list(map(list, zip(*board)))
     for c in columns:
-        if sum(c) == 0:
+        if sum(c) == -5:
             return True
     return False
 
 
-def calculate_score(scores, winningNumber):
+def calculate_score(board, winningNumber):
     """
     Score is the sum of the un-marked squares multiplied
     by the winning number.
     
     """
-    unmarkedSum = sum(sum(scores, []))
+    unmarkedSum = 0
+    for i, row in enumerate(board):
+        for j, column in enumerate(row):
+            # marked squares have a value of -1
+            # clamp them to zero.
+            unmarkedSum += max(0, board[i][j])
     return winningNumber * unmarkedSum
 
 
@@ -215,7 +214,7 @@ def play_bingo(numbers, boards):
     so we can track the order of wins. We eventually need the first
     board to win and the last board to win as well as their respective
     winning numbers.
-    
+
     """
     winningCards = []
     winningNumbers = []
