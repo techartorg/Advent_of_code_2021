@@ -6,6 +6,30 @@ import functools
 import operator
 
 
+def saturate(value):
+    """
+    Saturates a value, so it is only ever between 0 and 1
+
+    :param float value: the value to saturate
+
+    :return float: the value, but clamped between 0 and 1
+    """
+    return clamp(value, 0.0, 1.0)
+
+
+def clamp(value, minValue, maxValue):
+    """
+    Returns a value that is no less than the min value, and no more than the max value
+
+    :param float value: the value to clamp
+    :param float minValue: the minimum value to return
+    :param float maxValue: the maximum value to return
+
+    :return float: the clamped value
+    """
+    return max(minValue, min(value, maxValue))
+
+
 def product(iterable):
     """
     Returns the product of an iterable of numbers
@@ -24,7 +48,7 @@ class Float2(list):
 
         :param list inV: two-length list of numbers
         """
-        inV = [float(v) for v in inV]  # convert our inputs to floats
+        inV = [float(v) for v in inV]  # convert our inputData to floats
         super(Float2, self).__init__(inV)
 
     def __add__(self, other):
