@@ -45,10 +45,10 @@ first_board = first_boards[board_idx][:5]
 val = [sum(int(v) for v in l) for l in first_board]
 print(sum(val) * int(pick))
 
-def find_last_board(boards):
-    last_winner = None
-    last_pick = None
-    winners = set()
+def find_last_board(boards: list[list[list[str]]]) -> tuple[list[list[str]], int]:
+    last_winner: list[list[str]] = []
+    last_pick = ''
+    winners: set[int] = set()
     for pick in picks.split(','):
         for idx, board in enumerate(boards[:]):
             if idx in winners:

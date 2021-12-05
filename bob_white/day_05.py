@@ -10,7 +10,7 @@ vals = """0,9 -> 5,9
 0,0 -> 8,8
 5,5 -> 8,2""".split('\n')
 vals = [l.strip() for l in open('day_05_input.txt').readlines()]
-grid = defaultdict(int)
+grid: defaultdict[tuple[int, int], int] = defaultdict(int)
 for line in vals:
     v1, v2 = line.split(' -> ')
     x1, x2, y1, y2 = map(int, v1.split(',') + v2.split(','))
@@ -26,7 +26,8 @@ for line in vals:
 
 print(sum(v > 1 for v in grid.values()))
 
-grid = defaultdict(int)
+# Reset for part 2, which is a giant block of copy/paste, so maybe I should merge the loops or something.
+grid.clear()
 for line in vals:
     v1, v2 = line.split(' -> ')
     x1, x2, y1, y2 = map(int, v1.split(',') + v2.split(','))
