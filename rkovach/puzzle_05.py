@@ -89,7 +89,7 @@ Consider all of the lines. At how many points do at least two lines overlap?
 
 '''
 
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from math import copysign
 
 
@@ -107,79 +107,104 @@ test_input = r'''0,9 -> 5,9
 5,5 -> 8,2
 '''
 
-def parse_input(input_):
+Point = namedtuple('Point', 'x y')
 
+class Line:
+    def __init__(self, start_position, end_position):
+        self.p1 = start_position
+        self.p2 = end_position
+    
+    @property
+    def x_length(self):
+        return self.p2.x - self.p1.x
+    
+    @property
+    def y_length(self):
+        return self.p2.y - self.p1.y
+    
+    @property
+    def is_diagonal(self):
+        return abs(self.p2.x - self.p1.x) == abs(self.p2.y - self.p1.y)
+
+
+def parse_input(input_):
+    """Convert the puzzle input in a list of "Line" objects."""
+    lines = []
+    for l in input_.splitlines():
+        tokens = l.split('->')
+        startpos, endpos = tokens[0], tokens[1]
+
+        startpos = startpos.split(',')
+        x1 = int(startpos[0])
+        y1 = int(startpos[1])
+        p1 = Point(x1, y1)
+
+        endpos = endpos.split(',')
+        x2 = int(endpos[0])
+        y2 = int(endpos[1])
+        p2 = Point(x2, y2)
+
+        line = Line(p1, p2)
+        lines.append(line)
+
+    return lines
+
+
+def solve(lines):
     part1_points = defaultdict(int)
     part2_points = defaultdict(int)
 
-    lines = []
-    for l in input_.splitlines():
-        tokens = l.split()
-        startpos, endpos = tokens[0], tokens[-1]
+    for line in lines:
+        p1, p2 = line.p1, line.p2
+        # Only consider Lines which are Horizonal or Vertical.
+        # We can find out if they are by comparing the distance between
+        # the points on each axis.
+        if line.x_length == 0:
+            start, end = sorted((p1.y, p2.y))
+            for i in range(start, end+1):
+                part1_points[(p1.x, i)] += 1
 
-        startpos = startpos.split(',')
-        startpos_x = int(startpos[0])
-        startpos_y = int(startpos[-1])
-
-        endpos = endpos.split(',')
-        endpos_x = int(endpos[0])
-        endpos_y = int(endpos[-1])
-
-        # For horizonal and vertical lines we can just find the low point
-        # and step through the in between positions.
-        # diagonal lines in part two are little trickier.
-        if startpos_x == endpos_x:
-            start_y = min(startpos_y, endpos_y)
-            end_y = max(startpos_y, endpos_y)
-            for i in range(start_y, end_y + 1):
-                part1_points[(startpos_x, i)] += 1
-                part2_points[(startpos_x, i)] += 1
-
-        elif startpos_y == endpos_y:
-            start_x = min(startpos_x, endpos_x)
-            end_x = max(startpos_x, endpos_x)
-            for i in range(start_x, end_x + 1):
-                part1_points[(i, startpos_y)] += 1
-                part2_points[(i, startpos_y)] += 1
+        elif line.y_length == 0:
+            start, end = sorted((p1.x, p2.x))
+            for i in range(start, end+1):
+                part1_points[(i, p1.y)] += 1
         
         # Part two
-        if abs(endpos_x - startpos_x) == abs(endpos_y - startpos_y):
+        if line.is_diagonal:
+            # Need to determine which way the line travels so we can find
+            # all the points in between.
+            x_offset = copysign(1, line.x_length)
+            y_offest = copysign(1, line.y_length)
 
-            # need to determine which way the line travels.
-            x_len = endpos_x - startpos_x
-            y_len = endpos_y - startpos_y
-
-            x_offset = copysign(1, x_len)
-            y_offest = copysign(1, y_len)
-
-            x = startpos_x
-            y = startpos_y
-            # from the starting point, step once diagonally until we reach
+            x = p1.x
+            y = p1.y
+            # From the starting point, step once diagonally until we reach
             # the end point.
             while True:
                 part2_points[(x, y)] += 1
-                if (x, y) == (endpos_x, endpos_y):
+                if (x, y) == (p2.x, p2.y):
                     break
                 x += x_offset
                 y += y_offest
     
-    counter1 = 0
-    for pos, value in part1_points.items():
-        if value > 1:
-            counter1 += 1
+    counter1 = sum(v > 1 for v in part1_points.values())
 
-    counter2 = 0
-    for pos, value in part2_points.items():
-        if value > 1:
-            counter2 += 1
+    # add the results of part 1 to part 2.
+    for k, v in part1_points.items():
+        part2_points[k] += v
+    counter2 = sum(v > 1 for v in part2_points.values())
 
     return(counter1, counter2)
 
 
-test_results = parse_input(test_input)
+lines = parse_input(test_input)
+
+test_results = solve(lines)
 assert test_results[0] == 5
 assert test_results[1] == 12
 
-puzzle_results = parse_input(puzzle_input)
+lines = parse_input(puzzle_input)
+
+puzzle_results = solve(lines)
 print(f'Part One: {puzzle_results[0]}')
 print(f'Part Two: {puzzle_results[1]}')
