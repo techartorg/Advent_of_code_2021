@@ -125,6 +125,9 @@ def parse_input(input_):
         endpos_x = int(endpos[0])
         endpos_y = int(endpos[-1])
 
+        # For horizonal and vertical lines we can just find the low point
+        # and step through the in between positions.
+        # diagonal lines in part two are little trickier.
         if startpos_x == endpos_x:
             start_y = min(startpos_y, endpos_y)
             end_y = max(startpos_y, endpos_y)
@@ -151,11 +154,14 @@ def parse_input(input_):
 
             x = startpos_x
             y = startpos_y
-            while (x, y) != (endpos_x, endpos_y):
+            # from the starting point, step once diagonally until we reach
+            # the end point.
+            while True:
                 part2_points[(x, y)] += 1
+                if (x, y) == (endpos_x, endpos_y):
+                    break
                 x += x_offset
                 y += y_offest
-            part2_points[(endpos_x, endpos_y)] += 1
     
     counter1 = 0
     for pos, value in part1_points.items():
