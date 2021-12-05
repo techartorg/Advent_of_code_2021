@@ -28,8 +28,7 @@ class ProblemSolver(object):
             with open(self.filePath, 'r') as fh:
                 self.rawData = fh.read()
         else:
-            # TODO: Add a warning here
-            print("Warning!")
+            raise FileNotFoundError("Couldn't find the input file {}".format(self.filePath))
 
         # leave this open for later access by process input
         self.processed = None
