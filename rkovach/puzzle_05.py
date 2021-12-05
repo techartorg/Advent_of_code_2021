@@ -124,7 +124,15 @@ class Line:
     
     @property
     def is_diagonal(self):
-        return abs(self.p2.x - self.p1.x) == abs(self.p2.y - self.p1.y)
+        return abs(self.x_length) == abs(self.y_length)
+    
+    @property
+    def is_horizonal(self):
+        return self.y_length == 0
+    
+    @property
+    def is_vertical(self):
+        return self.x_length == 0
 
 
 def parse_input(input_):
@@ -159,12 +167,12 @@ def solve(lines):
         # Only consider Lines which are Horizonal or Vertical.
         # We can find out if they are by comparing the distance between
         # the points on each axis.
-        if line.x_length == 0:
+        if line.is_vertical:
             start, end = sorted((p1.y, p2.y))
             for i in range(start, end+1):
                 part1_points[(p1.x, i)] += 1
 
-        elif line.y_length == 0:
+        elif line.is_horizonal:
             start, end = sorted((p1.x, p2.x))
             for i in range(start, end+1):
                 part1_points[(i, p1.y)] += 1
