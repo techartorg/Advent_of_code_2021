@@ -1,4 +1,5 @@
 from copy import deepcopy
+
 stuff = """7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 22 13 17 11  0
@@ -18,7 +19,7 @@ stuff = """7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,
 18  8 23 26 20
 22 11 13  6  5
  2  0 12  3  7"""
-picks, *rest = [l.strip() for l in open('day_04_input.txt')]
+picks, *rest = [l.strip() for l in open("day_04_input.txt")]
 # picks, *rest = [l.strip() for l in stuff.split('\n')]
 boards: list[list[list[str]]] = []
 for line in rest:
@@ -31,7 +32,7 @@ for board in boards:
 
 
 def find_first_board(boards: list[list[list[str]]]):
-    for pick in picks.split(','):
+    for pick in picks.split(","):
         for idx, board in enumerate(boards):
             for line in board:
                 if pick in line:
@@ -39,17 +40,20 @@ def find_first_board(boards: list[list[list[str]]]):
                 if not line:
                     return idx, int(pick)
     return -1, -1
+
+
 first_boards = deepcopy(boards)
 board_idx, pick = find_first_board(first_boards)
 first_board = first_boards[board_idx][:5]
 val = [sum(int(v) for v in l) for l in first_board]
 print(sum(val) * int(pick))
 
+
 def find_last_board(boards: list[list[list[str]]]) -> tuple[list[list[str]], int]:
     last_winner: list[list[str]] = []
-    last_pick = ''
+    last_pick = ""
     winners: set[int] = set()
-    for pick in picks.split(','):
+    for pick in picks.split(","):
         for idx, board in enumerate(boards[:]):
             if idx in winners:
                 continue
@@ -62,6 +66,7 @@ def find_last_board(boards: list[list[list[str]]]) -> tuple[list[list[str]], int
                     winners.add(idx)
                     break
     return last_winner[5:], int(last_pick)
+
 
 last_board, last_pick = find_last_board(deepcopy(boards))
 # The first five parts of a board (what I'm returning in the function) are the rows, if we're removing a column, the last_pick might still be in there
