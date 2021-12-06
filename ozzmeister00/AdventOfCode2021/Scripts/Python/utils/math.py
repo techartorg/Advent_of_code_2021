@@ -43,11 +43,17 @@ class Float2(list):
     """
     A Float2 object to make it easier to access and multiply 2-length lists of numbers
     """
-    def __init__(self, inV):
+    def __init__(self, inV=None):
         """
 
         :param list inV: two-length list of numbers
         """
+        # set up a default input value to instatiate a float 2 to 0,0 automatically
+        # because we can't put a [0,0] in the kwargs otherwise it'll be the same
+        # for every instance and that's no bueno
+        if not inV:
+            inV = [0, 0]
+
         inV = [float(v) for v in inV]  # convert our inputData to floats
         super(Float2, self).__init__(inV)
 
