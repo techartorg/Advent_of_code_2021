@@ -1,6 +1,6 @@
 from copy import copy
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 
 def _calculate_score(card: List[List[str]], number: str) -> None:
