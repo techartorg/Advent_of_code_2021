@@ -7,11 +7,13 @@ for i in range(min(positions), max(positions) + 1):
 
 print(min(moves))
 
-def get_cost(position:int, move_to:int, *, _cache:dict[int, int]={}) -> int:
+
+def get_cost(position: int, move_to: int, *, _cache: dict[int, int] = {}) -> int:
     v = abs(position - move_to) + 1
     if v not in _cache:
         _cache[v] = sum(range(v))
     return _cache[v]
+
 
 moves.clear()
 for i in range(min(positions), max(positions) + 1):
