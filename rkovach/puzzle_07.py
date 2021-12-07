@@ -79,6 +79,8 @@ spend to align to that position?
 
 '''
 
+from timeit import default_timer as timer
+
 puzzle_input = open(__file__.replace('.py', '_input.txt')).read()
 test_input = '''16,1,2,0,4,2,7,1,2,14'''
 
@@ -102,7 +104,7 @@ assert part_one(parse_input(test_input)) == 37
 print(f'Part One: {part_one(parse_input(puzzle_input))}')
 
 
-# part two - slow...
+# part two - better!
 def part_two(positions):
     h_min = min(positions)
     h_max = max(positions)
@@ -120,21 +122,33 @@ def part_two(positions):
         for j in range(1, steps + 1):
             fuel_cost += 1 * j
 
-    for i in range(h_min, h_max + 1):
+    destinations = range(h_min, h_max +1)
+    zipped = []
+    for i in destinations:
+        zipped.append(destinations[i])
+        zipped.append(destinations[-1 - i])
+    
+    zipped = zipped[:int(len(zipped) / 2):]
+
+    cancelled_trip_count = 0
+    for i in zipped:
         if i == average:
             continue
         fuel = 0
         for p in positions:
             steps = abs(p - i)
-            for j in range(1, steps + 1):
-                fuel += 1 * j
-                # if, while traveling, we exceed the current fuel_cost, we 
-                # can stop traveling.
-                if fuel > fuel_cost:
-                    break
+
+            fuel += steps * (steps + 1) / 2
+            if fuel > fuel_cost:
+                cancelled_trip_count += 1
+                break
         if fuel < fuel_cost:
             fuel_cost = fuel
+    print(f'Canceled {cancelled_trip_count} Trips.')
     return fuel_cost
 
 assert part_two(parse_input(test_input)) == 168
+start = timer()
 print(f'Part Two: {part_two(parse_input(puzzle_input))}')
+end = timer()
+print(f'Part Two Execution Time: {end - start}')
