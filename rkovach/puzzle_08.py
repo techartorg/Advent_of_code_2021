@@ -284,8 +284,60 @@ def part_two(input_):
     return total_value
 
 
+def part_two_2(input_):
+    """
+    New solution based on the observation that each number can be uniquely
+    identified with some simple overlap tests with 4 and 7.
+    
+    """
+    total_value = 0
+
+    for l in input_.splitlines():
+        tokens = l.split()
+        signals = tokens[0:10]
+        output = tokens[-4:]
+
+        # The wires are randomized, but the order doesn't matter.
+        # Sort the wires alphabetically to make it easier to compare the
+        # displayed digits against the signals later.
+        signals = [''.join(sorted(x)) for x in signals]
+        output = [''.join(sorted(x)) for x in output]
+
+        # Number of wires in the number, number of wires shared with 4, 
+        # number of wires shared with 7.
+        numbers_map = {(6, 3, 3) : '0',
+                       (2, 2, 2) : '1',
+                       (5, 2, 2) : '2',
+                       (5, 3, 3) : '3',
+                       (4, 4, 2) : '4',
+                       (5, 3, 2) : '5',
+                       (6, 3, 2) : '6',
+                       (3, 2, 3) : '7',
+                       (7, 4, 3) : '8',
+                       (6, 4, 3) : '9'}
+        
+        four = None
+        seven = None
+        for num in signals:
+            if len(num) == 4:
+                four = num
+            elif len(num) == 3:
+                seven = num
+        
+        output_digits = ''
+        for num in output:
+            wire_count = len(num)
+            shared_with_four = len(list(set(num).intersection(four)))
+            shared_with_seven = len(list(set(num).intersection(seven)))
+            output_digits += numbers_map[(wire_count, shared_with_four, shared_with_seven)]
+        
+        total_value += int(output_digits)
+    return total_value
+
+
 assert part_one(test_input) == 26
 assert part_two(test_input) == 61229
 
 print(f'Part One: {part_one(puzzle_input)}')
 print(f'Part Two: {part_two(puzzle_input)}')
+print(f'Part Two.2: {part_two_2(puzzle_input)}')
