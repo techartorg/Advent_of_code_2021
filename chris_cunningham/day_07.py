@@ -1,29 +1,29 @@
-import sys
-from typing import Callable
-
-
-def g_dist(a: int, b: int) -> int:
-    distance = abs(a - b)
-    return distance * (distance + 1) // 2
+from statistics import mean, median
 
 
 def main():
     with open("inputs/day_07.txt", 'r') as f:
         inputs = [int(i) for i in f.read().split(",")]
-        print("".join(chr(i) for i in inputs))  # wish it was
+        # print("".join(chr(i) for i in inputs))  # wish it was
 
-    print(f"Part One: {solve(inputs, lambda a, b: abs(a - b))}")
-    print(f"Part Two: {solve(inputs, g_dist)}")
+    part_one, part_two = solve(inputs)
+    print(f"Part One: {part_one}")
+    print(f"Part Two: {part_two}")
 
 
-def solve(inputs: list[int], cost_exp: Callable[[int, int], int]):
-    min_cost = sys.maxsize
+def solve(inputs: list[int]) -> tuple[int, int]:
+    median_dist = int(median(inputs))
+    mean_dist = int(mean(inputs))
 
-    for i in range(min(inputs), max(inputs) + 1):
-        cost = sum(cost_exp(v, i) for v in inputs)
-        min_cost = min(min_cost, cost)
+    part_one = 0
+    candidates = [0] * 3
 
-    return min_cost
+    for value in inputs:
+        part_one += int(abs(value - median_dist))
+        for index, mod in enumerate(range(-1, 2)):
+            candidates[index] += sum(n for n in range(1, abs(value - mean_dist + mod) + 1))
+
+    return part_one, min(candidates)
 
 
 if __name__ == '__main__':
