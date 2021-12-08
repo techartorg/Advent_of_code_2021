@@ -30,37 +30,29 @@ def part_one(inputs: list[Input]) -> int:
 
 def numbers_from_signals(signals: list[str]) -> dict[int, str]:
     numbers = {}
-    _0_6_9 = []
-    _2_3_5 = []
+    others = []
 
     for i in signals:
         match count := len(i):
-            case 5:
-                _2_3_5.append(i)
-            case 6:
-                _0_6_9.append(i)
-            case _:
-                numbers[count_to_digit[count]] = i
+            case 4 | 3: numbers[count_to_digit[count]] = i
+            case _: others.append(i)
 
-    for i in _0_6_9:
-        num = set(i)
-        if len(num.intersection(numbers[1])) == 1:
-            numbers[6] = i
-        elif len(num.intersection(numbers[4])) == 4:
-            numbers[9] = i
-        else:
-            numbers[0] = i
+    def intersect(x) -> tuple[int, int, int, str]:
+        four = len(set(x).intersection(numbers[4]))
+        seven = len(set(x).intersection(numbers[7]))
+        return len(x), four, seven, x
 
-    for i in _2_3_5:
-        num = set(i)
-        if len(num.intersection(numbers[1])) == 2:
-            numbers[3] = i
-        elif len(num.intersection(numbers[6])) == 5:
-            numbers[5] = i
-        else:
-            numbers[2] = i
+    for pattern in (intersect(i) for i in others):
+        match pattern:
+            case 6, 3, 3, num: numbers[0] = num
+            case 2, 2, 2, num: numbers[1] = num
+            case 5, 2, 2, num: numbers[2] = num
+            case 5, 3, 3, num: numbers[3] = num
+            case 5, 3, 2, num: numbers[5] = num
+            case 6, 3, 2, num: numbers[6] = num
+            case 7, 4, 3, num: numbers[8] = num
+            case 6, 4, 3, num: numbers[9] = num
 
-    assert len(numbers) == 10
     return numbers
 
 
