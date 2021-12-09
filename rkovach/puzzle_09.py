@@ -39,10 +39,45 @@ class Grid:
                 neighbors.append(new_coord)
         return neighbors
 
+    def get_low_points(self):
+        low_points = []
+        for coord, point in self.positions.items():
+            lowpoint = True
+
+            neighbors = self.get_neighbors(coord)
+            for neighbor in neighbors:
+                if self.positions[neighbor].value <= point.value:
+                    lowpoint = False
+                    break
+
+            point.is_lowpoint = lowpoint
+            if lowpoint:
+               low_points.append(coord)
+
+        return(low_points)
+
+    def expand_basin(self, coord):
+        basin_locations = [coord]
+        neighbor_count = len(self.get_neighbors(coord))
+        while neighbor_count != 0:
+            for c in basin_locations:
+                neighbors = self.get_neighbors(c)
+                neighbor_count = 0
+                for n in neighbors:
+                    if n in basin_locations:
+                        continue
+                    elif self.positions[n].is_peak:
+                        continue
+                    else:
+                        neighbor_count += 1
+                        basin_locations.append(n)
+
+        return basin_locations
+
 
 def part_one(input_):
     grid = Grid(input_)
-    low_points = get_low_points(grid)
+    low_points = grid.get_low_points()
     answer = 0
     for p in low_points:
         answer += grid.positions[p].value + 1
@@ -51,53 +86,16 @@ def part_one(input_):
 
 def part_two(input_):
     grid = Grid(input_)
-    low_points = get_low_points(grid)
+    low_points = grid.get_low_points()
 
     basin_sizes = []
     for p in low_points:
-        basin = expand_basin(grid, p)
+        basin = grid.expand_basin(p)
         basin_sizes.append(len(basin))
     
     basin_sizes = sorted(basin_sizes)
 
     return basin_sizes[-1] * basin_sizes[-2] * basin_sizes[-3]
-
-
-def get_low_points(grid):
-    low_points = []
-    for coord, point in grid.positions.items():
-        lowpoint = True
-
-        neighbors = grid.get_neighbors(coord)
-        for neighbor in neighbors:
-            if grid.positions[neighbor].value <= point.value:
-                lowpoint = False
-                break
-
-        point.is_lowpoint = lowpoint
-        if lowpoint:
-           low_points.append(coord)
-
-    return(low_points)
-
-
-def expand_basin(grid, coord):
-    basin_locations = [coord]
-    neighbor_count = len(grid.get_neighbors(coord))
-    while neighbor_count != 0:
-        for c in basin_locations:
-            neighbors = grid.get_neighbors(c)
-            neighbor_count = 0
-            for n in neighbors:
-                if n in basin_locations:
-                    continue
-                elif grid.positions[n].is_peak:
-                    continue
-                else:
-                    neighbor_count += 1
-                    basin_locations.append(n)
-
-    return basin_locations
 
 
 assert part_one(test_input) == 15
