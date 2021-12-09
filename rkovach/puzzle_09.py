@@ -99,24 +99,12 @@ test_input = r'''2199943210
 puzzle_input = open(__file__.replace('.py', '_input.txt')).read()
 
 
-class Point:
-    def __init__(self, x, y, value):
-        self.x = x
-        self.y = y
-        self.is_peak = value == 9
-        self.is_lowpoint = False
-        self.value = value
-    
-    def __repr__(self):
-        return f'Point ({self.x}, {self.y} has a depth of {self.value}.)'
-
-
 class Grid:
     def __init__(self, input_):
         self.positions = {}
         for y, l in enumerate(input_.splitlines()):
             for x, depth in enumerate([int(d) for d in l]):
-                self.positions[(x, y)] = Point(x, y, depth)
+                self.positions[(x, y)] = depth
     
     def get_neighbors(self, coord):
         neighbors = []
@@ -132,16 +120,15 @@ class Grid:
 
     def get_low_points(self):
         low_points = []
-        for coord, point in self.positions.items():
+        for coord, depth in self.positions.items():
             lowpoint = True
 
             neighbors = self.get_neighbors(coord)
             for neighbor in neighbors:
-                if self.positions[neighbor].value <= point.value:
+                if self.positions[neighbor] <= depth:
                     lowpoint = False
                     break
 
-            point.is_lowpoint = lowpoint
             if lowpoint:
                low_points.append(coord)
 
@@ -157,7 +144,7 @@ class Grid:
                 for n in neighbors:
                     if n in basin_locations:
                         continue
-                    elif self.positions[n].is_peak:
+                    elif self.positions[n] == 9:
                         continue
                     else:
                         neighbor_count += 1
@@ -171,7 +158,7 @@ def part_one(input_):
     low_points = grid.get_low_points()
     answer = 0
     for p in low_points:
-        answer += grid.positions[p].value + 1
+        answer += grid.positions[p] + 1
     return answer
 
 
