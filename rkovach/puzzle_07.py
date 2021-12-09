@@ -1,4 +1,5 @@
-f'''--- Day 7: The Treachery of Whales ---
+r'''
+--- Day 7: The Treachery of Whales ---
 A giant whale has decided your submarine is its next meal, and it's much faster 
 than you are. There's nowhere to run!
 
@@ -119,8 +120,9 @@ def part_two(positions):
     # lower.
     for p in positions:
         steps = abs(p - average)
-        for j in range(1, steps + 1):
-            fuel_cost += 1 * j
+        fuel_cost += (steps * (steps + 1) / 2)
+    
+    fuel_cost = int(fuel_cost)
 
     destinations = range(h_min, h_max +1)
     zipped = []
@@ -131,19 +133,23 @@ def part_two(positions):
     zipped = zipped[:int(len(zipped) / 2):]
 
     cancelled_trip_count = 0
+
     for i in zipped:
+        
         if i == average:
             continue
+
         fuel = 0
         for p in positions:
             steps = abs(p - i)
-
-            fuel += steps * (steps + 1) / 2
+            fuel += (steps * (steps + 1) / 2)
             if fuel > fuel_cost:
                 cancelled_trip_count += 1
                 break
+        
         if fuel < fuel_cost:
-            fuel_cost = fuel
+            fuel_cost = int(fuel)
+    
     print(f'Canceled {cancelled_trip_count} Trips.')
     return fuel_cost
 
