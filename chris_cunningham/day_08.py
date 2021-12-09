@@ -34,7 +34,7 @@ def numbers_from_signals(signals: list[str]) -> dict[int, str]:
 
     for i in signals:
         match count := len(i):
-            case 4 | 3: numbers[count_to_digit[count]] = i
+            case 2 | 4 | 3 | 7: numbers[count_to_digit[count]] = i
             case _: others.append(i)
 
     def intersect(x) -> tuple[int, int, int, str]:
@@ -45,12 +45,10 @@ def numbers_from_signals(signals: list[str]) -> dict[int, str]:
     for pattern in (intersect(i) for i in others):
         match pattern:
             case 6, 3, 3, num: numbers[0] = num
-            case 2, 2, 2, num: numbers[1] = num
             case 5, 2, 2, num: numbers[2] = num
             case 5, 3, 3, num: numbers[3] = num
             case 5, 3, 2, num: numbers[5] = num
             case 6, 3, 2, num: numbers[6] = num
-            case 7, 4, 3, num: numbers[8] = num
             case 6, 4, 3, num: numbers[9] = num
 
     return numbers
