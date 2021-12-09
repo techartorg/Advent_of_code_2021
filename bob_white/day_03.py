@@ -22,12 +22,8 @@ for line in lines:
 
 for idx in range(1, len(lines[0])):
     if len(oxygen) != 1:
-        oxygen = [
-            line for line in oxygen if line[idx] == get_significant_bit(oxygen, idx)
-        ]
+        oxygen = [line for line in oxygen if line[idx] == get_significant_bit(oxygen, idx)]
     if len(carbon) != 1:
-        carbon = [
-            line for line in carbon if line[idx] != get_significant_bit(carbon, idx)
-        ]
+        carbon = [line for line in carbon if line[idx] != get_significant_bit(carbon, idx)]
 
 print(int(carbon.pop(), 2) * int(oxygen.pop(), 2))

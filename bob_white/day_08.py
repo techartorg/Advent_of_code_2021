@@ -31,10 +31,7 @@ for line in open("day_08_input.txt"):
     for permutation in permutations("abcdefg"):
         mapping = {k: v for k, v in zip("abcdefg", permutation)}
         # Checking if all words in the signal map back to a valid known digit
-        remapped = (
-            "".join(sorted(mapping[c] for c in word)) in sorted_mapping
-            for word in signal.split()
-        )
+        remapped = ("".join(sorted(mapping[c] for c in word)) in sorted_mapping for word in signal.split())
         if all(remapped):
             # Once we've got all our values mapping back to a digit, we can go through and look them all up
             digits: list[str] = []
