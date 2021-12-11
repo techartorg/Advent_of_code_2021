@@ -23,9 +23,7 @@ grid = {(x, y): int(v) for y, row in enumerate(open("day_11_input.txt").read().s
 
 total = 0
 for step in range(1, 500):
-    if all(v == 0 for v in grid.values()):
-        print(step)
-        break
+
     for oct in grid:
         grid[oct] += 1
     flash: set[tuple[int, int]] = {oct for oct in grid if grid[oct] > 9}
@@ -44,3 +42,6 @@ for step in range(1, 500):
     total += len(flashed)
     if step == 100:
         print(total)
+    if all(v == 0 for v in grid.values()):
+        print(step)
+        break
