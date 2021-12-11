@@ -1,63 +1,59 @@
-err_scores = {
-    ")": 3,
-    "]": 57,
-    "}": 1197,
-    ">": 25137,
-}
+from typing import Iterable
 
-valid_points = {
-    ")": 1,
-    "]": 2,
-    "}": 3,
-    ">": 4,
-}
-
-pairs = ["()", "[]", "{}", "<>"]
+rtl_map = {v: k for k, v in ["[]", "{}", "<>", "()"]}
 
 
 def main():
     with open("inputs/day_10.txt", 'r') as f:
-        inputs = f.read().splitlines()
+        inputs = [parse_line(i) for i in f.read().splitlines()]
 
-    err_score, valid_lines = part_one(inputs)
-    print(f"Part One: {err_score}")
-    print(f"Part Two: {part_two(valid_lines)}")
-
-
-def filter_pairs(line: str) -> str:
-    filtered = line
-
-    while any(i in filtered for i in pairs):
-        for pair in pairs:
-            filtered = filtered.replace(pair, "")
-
-    return filtered
+    print(f"Part One: {part_one(i for i in inputs if isinstance(i, str))}")
+    print(f"Part Two: {part_two(i for i in inputs if isinstance(i, list))}")
 
 
-def part_one(lines: list[str]) -> tuple[int, list[str]]:
+def parse_line(line: str) -> str | list[str] | None:
+    stack = []
+
+    for c in line:
+        match c:
+            case '[' | '{' | '<' | '(':
+                stack.append(c)
+            case _:
+                p = stack.pop()
+                if p != rtl_map[c]:
+                    return c
+
+    if stack:
+        return stack
+
+
+def part_one(inputs: Iterable[str]) -> int:
     score = 0
-    valid_lines = []
 
-    for line in lines:
-        no_pairs = filter_pairs(line)
-        errs = sorted((c for _, c in pairs if c in no_pairs), key=lambda x: no_pairs.index(x))
-        if errs:
-            score += err_scores[errs[0]]
-        else:
-            valid_lines.append(no_pairs)
+    for line in inputs:
+        match line:
+            case ')': score += 3
+            case ']': score += 57
+            case '}': score += 1197
+            case '>': score += 25137
 
-    return score, valid_lines
+    return score
 
 
-def part_two(lines: list[str]) -> int:
+def part_two(inputs: Iterable[list[str]]) -> int:
     scores = []
-    ltr = {k: v for k, v in pairs}
 
-    for line in lines:
-        score = 0
+    for line in inputs:
+        result = 0
+
         for c in reversed(line):
-            score = score * 5 + valid_points[ltr[c]]
-        scores.append(score)
+            result *= 5
+            match c:
+                case '(': result += 1
+                case '[': result += 2
+                case '{': result += 3
+                case '<': result += 4
+        scores.append(result)
 
     scores.sort()
     return scores[len(scores) // 2]
