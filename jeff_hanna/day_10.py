@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Set, Tuple
+from typing import List
 
 _PAIRS = ("()", "[]", "{}", "<>")
 _CLOSERS = {'(': ')', '[': ']', '{': '}', '<': '>'}
@@ -40,7 +40,6 @@ def part_2(data:List[str]) -> None:
         trimmed_line = _eliminate_pairs(d)
         corrupted_elements = {trimmed_line.index(x):x for x in _CLOSERS.values() if x in trimmed_line}
         if not corrupted_elements:
-            #incomplete_lines.append(trimmed_line)
             ordered_openers = list(trimmed_line)
             ordered_openers.reverse()
             for c in ''.join([_CLOSERS.get( x, '') for x in ordered_openers]):
@@ -56,5 +55,5 @@ def part_2(data:List[str]) -> None:
 if __name__ == "__main__":
     filepath = Path(__file__).parent / "day_10_input.txt"
     data = filepath.read_text().splitlines()
-    # part_1(data)
+    part_1(data)
     part_2(data)
