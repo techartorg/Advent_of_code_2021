@@ -58,8 +58,7 @@ def part_one(grid: Grid) -> int:
 
 def part_two(grid: Grid) -> int:
     for step in itertools.count(1):
-        solve_step(grid)
-        if all(grid[r][c] == 0 for r, c in grid_iter(grid)):
+        if solve_step(grid) == 100:
             return step
 
 
