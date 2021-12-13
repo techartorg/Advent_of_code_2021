@@ -4,9 +4,9 @@ Inst = tuple[str, int]
 
 def main():
     with open("inputs/day_13.txt", 'r') as f:
-        points, grid = parse_inputs(f.read())
+        grid, instructions = parse_inputs(f.read())
 
-    count, code = solve(points, grid)
+    count, code = solve(grid, instructions)
     print(f"Part One: {count}")
     print(f"Part Two:\n{code}")
 
