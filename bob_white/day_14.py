@@ -1,4 +1,4 @@
-from collections import Counter, deque
+from collections import Counter
 
 example = """NNCB
 
