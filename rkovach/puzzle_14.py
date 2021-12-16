@@ -1,3 +1,6 @@
+from collections import defaultdict
+
+
 puzzle_input = open(__file__.replace('.py', '_input.txt')).read()
 
 test_input = r'''NNCB
@@ -31,6 +34,8 @@ def parse_input(input_):
             rules[pair] = element
     return template, rules
 
+
+# Part One, Brute force string replacement...
 def part_one(input_):
 
     template, rules = parse_input(input_)
@@ -68,55 +73,51 @@ def part_one(input_):
     return score(polymer)
 
 
-''' Not working efficiently...
-def part_two():
-    memo = {}
-    template, rules = parse_input(puzzle_input)
-    memo2 = {}
+# Part Two, counting with dictionaries...
+def part_two(input_):
 
-    for polymer, element in rules.items():
-        memo[polymer] = polymer[0] + element + polymer[1]
-    
-    def run(polymer):
-        i = 0
-        for e in polymer:
-            pair = polymer[i:i+2]
-            if len(pair) != 2:
-                continue
-            polymer = polymer.replace(pair, memo[pair], 1)
-            i += 2
-        return polymer
+    pair_count = defaultdict(int)
 
-    for k in rules.keys():
-        polymer = k
-        for i in range(10):
-            polymer = run(polymer)
-        memo2[k] = polymer
-    
-    initial_pairs = []
-    for i, e in enumerate(template):
-        pair = template[i:i+2]
-        if len(pair) != 2:
-            continue
-        initial_pairs.append(pair)
-    
-    polymer = ''
-    for p in initial_pairs:
-        polymer += memo2[p]
-    
-    def score(polymer):
-        elements = list(set(polymer))
-        occurances = {}
-        for e in elements:
-            occurances[e] = polymer.count(e)
+    template, rules = parse_input(input_)
+    splits = {}
+    for pair, elem in rules.items():
+        a = pair[0] + elem
+        b = elem + pair[1]
+        splits[pair] = [a, b]
+        pair_count[pair] = 0
 
-        min_ = min(occurances.values())
-        max_ = max(occurances.values())
-        return max_ - min_
+    elements = list(set(rules.values()))
+    polymers = {x : 0 for x in elements}
 
-    print(score(polymer))
+    steps = 40
 
-'''
+    pairs = [template[i:i+2] for i in range(len(template) - 1)]
+    for x in set(pairs):
+        pair_count[x] += pairs.count(x)
+
+    for i in range(steps):
+        tmp = defaultdict(int)
+        for p, cnt in pair_count.items():
+            a, b = splits[p]
+            tmp[a] += cnt
+            tmp[b] += cnt
+            tmp[p] -= cnt
+
+        for k, v in tmp.items():
+            pair_count[k] += v
+ 
+    for p, cnt in pair_count.items():
+        polymers[p[0]] += cnt
+    polymers[template[-1]] += 1
+
+    min_ = min(polymers.values())
+    max_ = max(polymers.values())
+    return max_ - min_
+
 
 assert part_one(test_input) == 1588
 print(f'Part One: {part_one(puzzle_input)}')
+
+
+assert part_two(test_input) == 2188189693529
+print(f'Part Two: {part_two(puzzle_input)}')
