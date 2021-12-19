@@ -182,7 +182,7 @@ def dist(a: Point, b: Point) -> int:
 def find_overlap(base: set[Point], other: list[Point]) -> tuple[list[Point], Point]:
     for matrix in MATRICES:
         transformed = [transform_vector(matrix, vec) for vec in other]
-        for ap in enumerate(base):
+        for ap in base:
             for bp in transformed:
                 delta = sub_point(ap, bp)
                 shifted = [add_point(delta, vec) for vec in transformed]
