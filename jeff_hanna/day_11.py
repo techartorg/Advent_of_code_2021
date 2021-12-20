@@ -28,7 +28,6 @@ def _do_flash(grid: List[List[int]], flashpoints: List[Tuple[int, int]], to_zero
     if new_flashpoints:
         return _do_flash( grid, new_flashpoints, to_zero)
 
-    # Set all flashed coords to 0
     for r, c in to_zero:
         grid[r][c] = 0
 
@@ -71,7 +70,7 @@ def part_2(grid: List[List[int]]) -> None:
         if flashpoints:            
             grid, _fc = _do_flash(grid, flashpoints, [])
 
-        if all([not bool(x) for x in list(chain(*grid))]):
+        if all([not x for x in list(chain(*grid))]):
             print(step)
             return
 
@@ -84,6 +83,6 @@ if __name__ == "__main__":
     grid = []
     for d in data:
         grid.append([int(x) for x in d])
-
+    
     part_1(copy.deepcopy(grid))
     part_2(grid)
