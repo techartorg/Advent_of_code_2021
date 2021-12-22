@@ -32,24 +32,24 @@ def add_point(x: tuple[int, int], y: tuple[int, int]) -> tuple[int, int]:
 
 
 def roll_dice(
-    player1: int,
-    player2: int,
-    score1: int,
-    score2: int,
-    is_p1: bool,
-    current_roll: int,
-    rolls: int,
+    player1: int,  # Fist player's position
+    player2: int,  # Second Player's position
+    score1: int,  # First player's score
+    score2: int,  # Second Player's score
+    is_p1: bool,  # is this the first player?
+    roll_sum: int,  # Sum of the rolls for this round
+    rolls: int,  # what roll are we on for the round?
     _cache: dict[tuple[int, int, int, int, bool, int, int], tuple[int, int]] = {},
 ) -> tuple[int, int]:
     if score1 >= 21:
         return 1, 0
     if score2 >= 21:
         return 0, 1
-    if (player1, player2, score1, score2, is_p1, current_roll, rolls) not in _cache:
+    if (player1, player2, score1, score2, is_p1, roll_sum, rolls) not in _cache:
         wins = (0, 0)
         if rolls == 3:
             player = player1 if is_p1 else player2
-            player += current_roll
+            player += roll_sum
             player = ((player - 1) % 10) + 1  # easier than rotating a deque, but I liked how I did part 1
             score = score1 if is_p1 else score2
             score += player
@@ -60,9 +60,9 @@ def roll_dice(
             wins = add_point(wins, roll_dice(*args))
         else:
             for i in range(1, 4):
-                wins = add_point(wins, roll_dice(player1, player2, score1, score2, is_p1, current_roll + i, rolls + 1))
-        _cache[(player1, player2, score1, score2, is_p1, current_roll, rolls)] = wins
-    return _cache[(player1, player2, score1, score2, is_p1, current_roll, rolls)]
+                wins = add_point(wins, roll_dice(player1, player2, score1, score2, is_p1, roll_sum + i, rolls + 1))
+        _cache[(player1, player2, score1, score2, is_p1, roll_sum, rolls)] = wins
+    return _cache[(player1, player2, score1, score2, is_p1, roll_sum, rolls)]
 
 
 wins = roll_dice(8, 5, 0, 0, True, 0, 0)
