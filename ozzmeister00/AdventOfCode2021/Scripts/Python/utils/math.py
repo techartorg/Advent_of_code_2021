@@ -39,38 +39,59 @@ def product(iterable):
     return functools.reduce(operator.mul, iterable, 1)
 
 
-class Float2(list):
+class TwoD(list):
     """
-    A Float2 object to make it easier to access and multiply 2-length lists of numbers
+    A TwoD object to make it easier to access and multiply 2-length lists of numbers
     """
-    def __init__(self, inV=None):
+    def __init__(self, inV=None, defaultClass=None):
         """
-
-        :param list inV: two-length list of numbers
+        :param class baseClass: which datatype class to use to instantiate the array
+        :param iterable inV: two-length iterable of class defaultClass
         """
         # set up a default input value to instatiate a float 2 to 0,0 automatically
         # because we can't put a [0,0] in the kwargs otherwise it'll be the same
         # for every instance and that's no bueno
         if not inV:
-            inV = [0, 0]
+            inV = [defaultClass(), defaultClass()]
+        else:
+            inV = [defaultClass(v) for v in inV]  # convert our inputData to a list
 
-        inV = [float(v) for v in inV]  # convert our inputData to floats
-        super(Float2, self).__init__(inV)
+        self.defaultClass = defaultClass
+
+        super(TwoD, self).__init__(inV)
 
     def __add__(self, other):
-        return Float2([self.x + other.x, self.y + other.y])
+        if isinstance(other, TwoD):
+            return self.__class__([self.x + other.x, self.y + other.y], defaultClass=self.defaultClass)
+        else:
+            return self.__class__([self.x + other, self.y + other], defaultClass=self.defaultClass)
 
     def __sub__(self, other):
-        return Float2([self.x - other.x, self.y - other.y])
+        if isinstance(other, TwoD):
+            return self.__class__([self.x - other.x, self.y - other.y], defaultClass=self.defaultClass)
+        else:
+            return self.__class__([self.x - other, self.y - other], defaultClass=self.defaultClass)
 
     def __mul__(self, other):
-        if isinstance(other, Float2):
-            return Float2([self.x * other.x, self.y * other.y])
+        if isinstance(other, self.__class__):
+            return self.__class__([self.x * other.x, self.y * other.y], defaultClass=self.defaultClass)
         if isinstance(other, int) or isinstance(other, float):
-            return Float2([self.x * other, self.y * other])
+            return self.__class__([self.x * other, self.y * other], defaultClass=self.defaultClass)
+
+    def _div(self, other):
+        if isinstance(other, self.__class__):
+            return self.__class__([self.x / other.x, self.y / other.y], defaultClass=self.defaultClass)
+        if isinstance(other, int) or isinstance(other, float):
+            return self.__class__([self.x / other, self.y / other], defaultClass=self.defaultClass)
+
+    def __truediv__(self, other):
+        return self._div(other)
+
+    def __divmod__(self, other):
+        return self._div(other)
 
     def __eq__(self, other):
-        if isinstance(other, Float2):
+        if isinstance(other, self.__class__):
             if self.x == other.x and self.y == other.y:
                 return True
 
@@ -99,6 +120,22 @@ class Float2(list):
     @y.setter
     def y(self, v):
         self[1] = v
+
+
+class Float2(TwoD):
+    """
+    Float-specific alias for TwoD
+    """
+    def __init__(self, inV=None, defaultClass=float):
+        super(Float2, self).__init__(inV, defaultClass=float)
+
+
+class Int2(TwoD):
+    """
+    Alias for TwoD
+    """
+    def __init__(self, inV=None, defaultClass=int):
+        super(Int2, self).__init__(inV, defaultClass=int)
 
 
 def dot(a, b):
@@ -141,3 +178,73 @@ def getBarycentric(p, a, b, c):
     u = 1.0 - v - w
 
     return u, v, w
+
+
+class Grid2D(list):
+    def __init__(self, width, data=None):
+        """
+        :param int width: how wide is the 2D Grid
+        :param iterable data: a 1d iterable with which to instantiate the grid
+        """
+        super(Grid2D, self).__init__(data)
+        self.width = width
+
+    @property
+    def height(self):
+        """
+        Get the height of the Grid2D
+        :return int:
+        """
+        return int(len(self) / self.width)
+
+    @height.setter
+    def height(self, value):
+        """
+        Grid2D doesn't support resizing yet
+        """
+        pass
+
+    def _coordsToIndex(self, coords):
+        """
+        :param Int2 coords: the 2d coordinates to translate to 1d
+
+        :return int: 1d index
+        """
+        return coords.y * self.width + coords.x
+
+    def __getitem__(self, coords):
+        """
+        :param Int2 coords: the coordinates of the item to retrieve
+
+        :returns: the item at the input coordinates
+        """
+        return super(Grid2D, self).__getitem__(self._coordsToIndex(coords))
+
+    def __setitem__(self, coords, value):
+        """
+        :param Int2 coords: the coordinates of the item to set
+        :param value: the value to which to set the coordinates
+        """
+        super(Grid2D, self).__setitem__(self._coordsToIndex(coords), value)
+
+    def __delitem__(self, coords):
+        """
+        :param Int2 coords: the coordinates of the item to delete
+        """
+        super(Grid2D, self).__delitem__(self._coordsToIndex(coords))
+
+    def __str__(self):
+        outString = ''
+        for y in range(self.height):
+            for x in range(self.width):
+                outString += str(self[Int2((x, y))]) + " "
+            outString += '\n'
+
+        return outString
+
+
+
+
+
+
+
