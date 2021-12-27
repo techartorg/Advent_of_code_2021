@@ -12,6 +12,8 @@ class BingoBoard(Grid2D):
         :param list[int] board: the bingo board as a list of integers
         """
         super(BingoBoard, self).__init__(5, data=board)
+        # store a separate grid for markers
+        self.markers = Grid2D(5, data=[False for i in range(25)])
         self.won = False
 
     def indexToCoords(self, index):
@@ -38,7 +40,7 @@ class BingoBoard(Grid2D):
         """
         if value in self:
             coords = self.find(value)
-            self[coords] *= -1
+            self.markers[coords] = True
             self.won = self.testColumn(coords.x) or self.testRow(coords.y)
             return self.won
 
@@ -56,32 +58,44 @@ class BingoBoard(Grid2D):
         """
         return [self[Int2((column, i))] for i in range(5)]
 
+    def gatherMarkersColumn(self, column):
+        """
+        :param int column: the column of markers to gather
+        """
+        return [self.markers[Int2((column, i))] for i in range(5)]
+
+    def gatherMarkersRow(self, row):
+        """
+        :param int row: the row of markers to gather
+        """
+        return [self.markers[Int2((i, row))] for i in range(5)]
+
     def testColumn(self, column):
         """
         :param int column: column to test
         :return bool: if the column is complete
         """
-        return self.testComplete(self.gatherColumn(column))
+        return self.testComplete(self.gatherMarkersColumn(column))
 
     def testRow(self, row):
         """
         :param int row: the row to test
         :return bool: if the row is complete
         """
-        return self.testComplete(self.gatherRow(row))
+        return self.testComplete(self.gatherMarkersRow(row))
 
     def testComplete(self, gathered):
         """
         :param list gathered: the gathered items from a row or column to test
         :return bool: if the row or column is fully marked
         """
-        return all([i < 0 for i in gathered])
+        return all(gathered)
 
     def unmarked(self):
         """
         :return list: the unmarked values on the board
         """
-        return [i for i in self if i > 0]
+        return [self[i] for i, value in enumerate(self.markers) if not value]
 
 
 class DaySolver04(ProblemSolver):
@@ -116,36 +130,52 @@ class DaySolver04(ProblemSolver):
         if not data:
             data = self.rawData
 
+        # convert the first line of the input data to an array of integers
         callOrder = [int(i) for i in data.split('\n')[0].split(',')]
         processed = []
 
+        # separate out the raw data for board definitions from the call order
         rawBoards = data.split('\n')[2:]
+        # loop over each board definition (five lines, followed by a blank, so step the range by 6)
         for i in range(0, len(rawBoards), 6):
+            # the board lines are the five lines from the current index forward
             boardLines = rawBoards[i:i+5]
-            print(boardLines)
             board = ''
+            # for each line in those board lines,
+            # replace spaces with commas and add a comma to the end as each one gets added
             for line in boardLines:
-                # clean up accidental double commas because of how the input data is formatted + ','
                 board += line.replace(' ', ',') + ','
 
-            board = board[:-1].lstrip(',').replace(',,',',')  # strip off the trailing comma
-            print(board)
+            # strip off any leading and trailing commas, as well as collapsing any doublecommas caused by
+            # Wastl insisting on using unpadded integers for single-digit values
+            board = board[:-1].lstrip(',').replace(',,',',')
+
+            # convert the values in the board to an array of integers
             board = [int(j) for j in board.split(',')]
+
+            # for safety, make sure the board is 25 items long
             if len(board) != 25:
                 raise Exception("Length of a board is not 25: {}".format(board))
+
+            # instantiate a bingo board using the array of integers
             processed.append(BingoBoard(board))
 
         return callOrder, processed
 
     def SolvePartOne(self, data=None):
         """
-        :param list data: the data to operate on
+        Call numbers in the order determined by our input data and mark boards
+        that have that number.
+
+        :param list[list[int], list[BingoBoard]] data: the call numbers in the first index,
+                                                       and all the boards that are in play
         
-        :return : the result
+        :return int: the product of the sum of the unmarked numbers on the winning board and the winning called number
         """
         if not data:
             data = self.processed
 
+        # unpack input data
         callOrder, boards = data
 
         # loop through each call number
@@ -161,36 +191,44 @@ class DaySolver04(ProblemSolver):
 
     def SolvePartTwo(self, data=None):
         """
-        :param list data: the data to operate on
-        
-        :return : the result
+        Call numbers in the order determined by our input data and mark boards
+        that have that number.
+
+        :param list[list[int], list[BingoBoard]] data: the call numbers in the first index,
+                                                       and all the boards that are in play
+
+        :return int: the product of the sum of the unmarked numbers on the last board
+                    to win and the number called to seal that win
         """
         if not data:
             data = self.processed
 
+        # unpack input data
         callOrder, boards = data
-        pointer = 0
+
+        # initial setup values
+        callPointer = 0
         wonBoards = []
 
-        while len(boards) and pointer < len(callOrder):
-            popBoards = []
-
+        # while loop testing the number of remaining boards and, for safety, the call pointer
+        while len(boards) and callPointer < len(callOrder):
             # iterate over all the boards, and mark the current number
-            for i, board in enumerate(boards):
-                # if the board won with that mark, add its index to a list to be popped out later
-                if board.mark(callOrder[pointer]):
-                    popBoards.append(i)
-
-            # after we've figured out all the boards that won with this number, pop them into the wonBoards array
-            for pop in popBoards:
-                wonBoards.append(boards.pop(pop))
+            # use a while loop, since we're popping boards out and for looping and popping aren't friends
+            boardPointer = 0
+            while boardPointer < len(boards):
+                board = boards[boardPointer]
+                # if the board won with that mark, pop it over to the wonBoards array
+                if board.mark(callOrder[callPointer]):
+                    wonBoards.append(boards.pop(boardPointer))
+                # otherwise, increment the board pointer and move on to the next board
+                else:
+                    boardPointer += 1
 
             # increment the pointer
-            pointer += 1
+            callPointer += 1
 
         # grab the absolute last board that won, sum its unmarked values, and multiply it by the final called value
-        return sum(wonBoards[-1].unmarked()) * callOrder[pointer-1]
-
+        return sum(wonBoards[-1].unmarked()) * callOrder[callPointer-1]
 
 
 def Main():
