@@ -206,11 +206,15 @@ class Grid2D(list):
 
     def _coordsToIndex(self, coords):
         """
-        :param Int2 coords: the 2d coordinates to translate to 1d
+        :param Int2 or int coords: the 2d coordinates to translate to 1d,
+                                    will just pass through coords if it's an integer
 
         :return int: 1d index
         """
-        return coords.y * self.width + coords.x
+        if isinstance(coords, Int2):
+            return coords.y * self.width + coords.x
+
+        return coords
 
     def __getitem__(self, coords):
         """
