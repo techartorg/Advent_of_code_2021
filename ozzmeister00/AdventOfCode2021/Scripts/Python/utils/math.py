@@ -2,6 +2,7 @@
 Common maths functions and datatypes for solving Advent of Code problems
 """
 
+import math
 import functools
 import operator
 
@@ -122,7 +123,23 @@ class TwoD(list):
         self[1] = v
 
 
-class Float2(TwoD):
+class Number2(TwoD):
+    """
+    Wrapper around numerical two-d classes with common methods shared between them
+    """
+    def distance(self, other):
+        """
+        :param Int2 or Float2 other: the other point to which we want the distance
+
+        :return float: the distance from this point to the input point
+        """
+        if not issubclass(Number2, other.__class__):
+            raise ValueError("{} is not a subclass of Number2 and its distance cannot be computed".format(other.__class__))
+
+        return math.sqrt(((other.x - self.x) ** 2) + ((other.y - self.y) ** 2))
+
+
+class Float2(Number2):
     """
     Float-specific alias for TwoD
     """
@@ -130,12 +147,28 @@ class Float2(TwoD):
         super(Float2, self).__init__(inV, defaultClass=float)
 
 
-class Int2(TwoD):
+class Int2(Number2):
     """
     Alias for TwoD
     """
     def __init__(self, inV=None, defaultClass=int):
         super(Int2, self).__init__(inV, defaultClass=int)
+
+    @property
+    def x(self):
+        return self[0]
+
+    @property
+    def y(self):
+        return self[1]
+
+    @x.setter
+    def x(self, value):
+        self[0] = int(value)
+
+    @y.setter
+    def y(self, value):
+        self[1] = int(value)
 
 
 def dot(a, b):
