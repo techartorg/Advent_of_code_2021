@@ -33,7 +33,7 @@ class Grid2DLineAccumulator(Grid2D):
             dx = abs(end.x - start.x)
             sx = 1 if start.x < end.x else -1
             dy = -abs(end.y - start.y)
-            sy = 1 if start.x < end.x else -1
+            sy = 1 if start.y < end.y else -1
             err = dx + dy
 
             visitedPoints = []
@@ -41,7 +41,6 @@ class Grid2DLineAccumulator(Grid2D):
             while linePointer != end:
                 point = Int2(linePointer)
                 visitedPoints.append(point)  # append the rounded point to the list of visited points
-                print(point)
                 self[point] += 1
 
                 e2 = 2 * err
@@ -52,11 +51,8 @@ class Grid2DLineAccumulator(Grid2D):
                     err += dx
                     linePointer.y += sy
 
-                print(self)  # debug
-
-            for point in list(set(visitedPoints)):
-                print(point)
-                self[point] += 1
+            # make sure the end point is also accounted for
+            self[end] += 1
 
     def drawRow(self, row, start, end):
         if start > end:
@@ -119,7 +115,7 @@ class DaySolver05(ProblemSolver):
                 width = max(point.x, width)
                 height = max(point.y, height)
 
-        return width+1, height+1, processed
+        return width+2, height+2, processed
 
     def SolvePartOne(self, data=None, ortho=True):
         """
@@ -153,7 +149,7 @@ class DaySolver05(ProblemSolver):
 
 def Main():
     solver = DaySolver05()
-    solver.TestAlgorithm(solver.SolvePartTwo, part=2)
+    solver.Run()
 
 
 if __name__ == '__main__':
