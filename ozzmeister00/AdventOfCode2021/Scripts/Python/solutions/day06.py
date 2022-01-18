@@ -24,10 +24,12 @@ class day06Solver(ProblemSolver):
         if not data:
             data = self.rawData
 
-        return [int(i) for i in data.split(',')]
+        # initialize an array of 9 integers (corresponding to the number of days remaining to spawn
+        processed = [0] * 9
+        for i in data.split(','):
+            processed[int(i)] += 1
 
-    def decrement(self, x):
-        return x - 1
+        return processed
 
     def handleDay(self, fish):
         """
@@ -35,17 +37,14 @@ class day06Solver(ProblemSolver):
         if any are zero, reset them to 6 and add a new fish at 8
         otherwise, decrement the timer
         """
-        fish.sort(reverse=True)
-        spawningFish = fish.count(0)
-        if spawningFish:
-            fish = fish[:-spawningFish]
+        newFish = fish[0]
+        outFish = fish[1:] # slice off the 0 fish, we'll add them back later
+        outFish[6] += newFish # add the newFish number of fish to the number of fish waiting 6 days
+        # then append the number of new fish to the end of the array,
+        # representing the number of fish waiting 8 days to spawn
+        outFish.append(newFish)
 
-        fish = [i - 1 for i in fish]
-
-        if spawningFish:
-            fish += [8, 6] * spawningFish
-
-        return fish
+        return outFish
 
     def SolvePartOne(self, data=None, numDays=80):
         """
@@ -58,17 +57,12 @@ class day06Solver(ProblemSolver):
 
         fish = data.copy()
 
-        start = time.time()
-
         days = numDays
         while days:
             fish = self.handleDay(fish)
             days -= 1
 
-        end = time.time()
-        print(end - start)
-
-        return len(fish)
+        return sum(fish)
 
     def SolvePartTwo(self, data=None):
         """
@@ -79,7 +73,7 @@ class day06Solver(ProblemSolver):
         if not data:
             data = self.processed
 
-        return self.SolvePartOne(numDays=256)
+        return self.SolvePartOne(data=data, numDays=256)
 
 
 if __name__ == '__main__':
