@@ -220,7 +220,22 @@ class Grid2D(list):
         :param iterable data: a 1d iterable with which to instantiate the grid
         """
         super(Grid2D, self).__init__(data)
-        self.width = width
+        self._width = width
+
+    @property
+    def width(self):
+        """
+        Get the width of the Grid2D
+        :return int:
+        """
+        return self._width
+
+    @width.setter
+    def width(self, value):
+        """
+        Grid2D doesn't support resizing yet
+        """
+        raise NotImplementedError("Grid2D doesn't support resizing")
 
     @property
     def height(self):
@@ -235,7 +250,7 @@ class Grid2D(list):
         """
         Grid2D doesn't support resizing yet
         """
-        pass
+        raise NotImplementedError("Grid2D doesn't support resizing")
 
     def _coordsToIndex(self, coords):
         """
