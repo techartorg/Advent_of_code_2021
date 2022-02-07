@@ -214,6 +214,12 @@ def getBarycentric(p, a, b, c):
 
 
 class Grid2D(list):
+    orthoNeighbors = [Int2((1, 0)),
+                 Int2((0, 1)),
+                 Int2((-1, 0)),
+                 Int2((0, -1))
+                 ]
+
     def __init__(self, width, data=None):
         """
         :param int width: how wide is the 2D Grid
@@ -263,6 +269,54 @@ class Grid2D(list):
             return coords.y * self.width + coords.x
 
         return coords
+
+    def indexToCoords(self, coords):
+        """
+        :param int coords: the 1d coordinate in the grid to seek
+
+        :return Int2: the x/y coordinate of the input index
+        """
+        if isinstance(coords, int):
+            return Int2((coords % self.width, coords / self.width))
+
+    def coordsInBounds(self, coords):
+        """
+        Returns true if the input coordinates are within the bounds of this grid
+        :param Int2 coords: 2d coordinates to check
+        :returns bool: if the input coords are in bounds
+        """
+        # TODO there will come a day when I need to update this so that Grid2D supports non-0 starting coordinates
+        return 0 <= coords.x < self.width and 0 <= coords.y < self.height
+
+    def enumerateOrthoLocalNeighbors(self, coords):
+        """
+        Returns a list of tuples of coordinate, value for each valid neighbor
+        that is North, South, East, and West of the input coordinate
+
+        :param Int2 coords: the coordinates from which to start
+        :yield (coords, object): the next neighbor in the NSEW group around the input coordinate
+        """
+        for neighbor in Grid2D.orthoNeighbors:
+            # TODO figure out why PyCharm thinks Int2 + Int2 returns a list
+            localNeighbor = Int2(coords + neighbor)
+            if self.coordsInBounds(localNeighbor):
+                yield localNeighbor, self[localNeighbor]
+
+    def enumerateNeighborsBox(self, coords, distance):
+        """
+        Yields all the neighbors in a square pattern that are x distance away from the input coords
+        :param Int2 coords: the starting coordinates
+        :param int distance: how many points away from the current point to search.
+            A distance of 1 will yield up to 8 elements (a box that is 3 x 3)
+            A distance of 2 will yield up to 24 elements (a box that is 5 x 5)
+
+        :yields (coords, object): the next neighbor in the box surrounding the input point
+        """
+        for x in range(coords.x - distance, coords.x + distance):
+            for y in range(coords.y - distance, coords.y + distance):
+                point = Int2((x, y))
+                if self.coordsInBounds(point):
+                    yield point, self[point]
 
     def __getitem__(self, coords):
         """
