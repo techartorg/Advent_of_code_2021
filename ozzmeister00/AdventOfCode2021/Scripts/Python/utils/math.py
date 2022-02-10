@@ -270,14 +270,23 @@ class Grid2D(list):
 
         return coords
 
-    def indexToCoords(self, coords):
+    def coordsToIndex(self, coords):
+        """
+        Exposing the method this way, because I'm not sure why I needed this
+        to be internal only
+        """
+        self._coordsToIndex(coords)
+
+    def indexToCoords(self, index):
         """
         :param int coords: the 1d coordinate in the grid to seek
 
         :return Int2: the x/y coordinate of the input index
         """
-        if isinstance(coords, int):
-            return Int2((coords % self.width, coords / self.width))
+        if isinstance(index, int):
+            return Int2((index % self.width, index / self.width))
+
+        return index
 
     def coordsInBounds(self, coords):
         """
@@ -312,15 +321,26 @@ class Grid2D(list):
 
         :yields (coords, object): the next neighbor in the box surrounding the input point
         """
-        for x in range(coords.x - distance, coords.x + distance):
-            for y in range(coords.y - distance, coords.y + distance):
+        if isinstance(coords, int):
+            coords = self.indexToCoords(coords)
+
+        for x in range(coords.x - distance, coords.x + distance + 1):
+            for y in range(coords.y - distance, coords.y + distance + 1):
                 point = Int2((x, y))
                 if self.coordsInBounds(point):
                     yield point, self[point]
 
+    def copy(self):
+        """
+        Override the built-in copy method so it returns a proper Grid2D
+
+        :returns Grid2D:
+        """
+        return Grid2D(self.width, data=self)
+
     def __getitem__(self, coords):
         """
-        :param Int2 coords: the coordinates of the item to retrieve
+        :param int, Int2 coords: the coordinates of the item to retrieve
 
         :returns: the item at the input coordinates
         """
@@ -340,7 +360,7 @@ class Grid2D(list):
         super(Grid2D, self).__delitem__(self._coordsToIndex(coords))
 
     def __str__(self):
-        outString = ''
+        outString = '\n'
         for y in range(self.height):
             for x in range(self.width):
                 outString += str(self[Int2((x, y))]) + " "
