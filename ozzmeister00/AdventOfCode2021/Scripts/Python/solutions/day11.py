@@ -43,7 +43,7 @@ class day11Solver(ProblemSolver):
 6882881134
 4846848554
 5283751526''': 1656}
-        self.testDataPartTwo = {list(self.testDataPartOne.keys())[0]:195}
+        self.testDataPartTwo = {list(self.testDataPartOne.keys())[0]: 195}
 
     def ProcessInput(self, data=None):
         """
@@ -153,6 +153,8 @@ class day11Solver(ProblemSolver):
             allFlashed = len(active) == flashes
 
             steps += 1
+
+        print(active)
 
         return steps
 
