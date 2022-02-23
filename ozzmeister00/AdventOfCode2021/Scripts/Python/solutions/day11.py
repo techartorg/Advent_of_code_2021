@@ -2,6 +2,8 @@
 Python day11
 """
 
+import copy
+
 from utils.math import Grid2D, Int2
 from utils.solver import ProblemSolver
 
@@ -110,7 +112,7 @@ class day11Solver(ProblemSolver):
         if not data:
             data = self.processed
 
-        active = data.copy()
+        active = copy.deepcopy(data)
 
         steps = 100
         flashes = 0
@@ -136,7 +138,7 @@ class day11Solver(ProblemSolver):
         if not data:
             data = self.processed
 
-        active = data.copy()
+        active = copy.deepcopy(data)
 
         allFlashed = False
         steps = 0
@@ -149,12 +151,9 @@ class day11Solver(ProblemSolver):
                     flashes += 1
                     active[i].flashed = False
 
-            # todo this passes the test case, but the answer is too low...
             allFlashed = len(active) == flashes
 
             steps += 1
-
-        print(active)
 
         return steps
 
